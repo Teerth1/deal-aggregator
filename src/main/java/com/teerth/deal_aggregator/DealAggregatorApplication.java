@@ -10,4 +10,6 @@ public class DealAggregatorApplication {
 		SpringApplication.run(DealAggregatorApplication.class, args);
 	}
 
+	
+
 }
