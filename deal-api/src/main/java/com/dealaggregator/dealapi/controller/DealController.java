@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.dealaggregator.dealapi.entity.Deal;
+import com.dealaggregator.dealapi.service.DealScraperService;
 import com.dealaggregator.dealapi.service.DealService;
 
 
@@ -21,8 +22,11 @@ public class DealController {
     // Controller methods would go here
 
     private final DealService dealService;
+    private final DealScraperService dealScraperService;
+
     
-    public DealController(DealService dealService) {
+    public DealController(DealService dealService, DealScraperService dealScrapperService){  
+        this.dealScraperService = dealScrapperService;
         this.dealService = dealService;
     }
 
@@ -34,6 +38,12 @@ public class DealController {
     @GetMapping("/{id}")
     public Deal getDealById(@PathVariable Long id) {
         return dealService.getDealById(id);
+    }
+
+    @GetMapping("/scrape-test")
+    public String testScrape() {
+        dealScraperService.scrapeReddit();
+        return "Check console for results";
     }
 
     @PostMapping

@@ -25,7 +25,7 @@ public class Deal{
     @Id
     @GeneratedValue(strategy=jakarta.persistence.GenerationType.IDENTITY)
     private Long id ;
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "TEXT")
     private String title;
 
     @Column(nullable = false)
@@ -38,6 +38,7 @@ public class Deal{
     @Column(nullable = false)
     private String vendor;
 
+    @Column(nullable = false, columnDefinition = "TEXT")
     private String dealUrl;
 
     @Column(nullable = false)
@@ -46,7 +47,7 @@ public class Deal{
     @Column(nullable = false)
     private String dealType;
 
-    @Column(length = 1000)
+    @Column(columnDefinition = "TEXT")
     private String description;
 
 
