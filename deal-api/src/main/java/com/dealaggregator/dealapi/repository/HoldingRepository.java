@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.dealaggregator.dealapi.entity.Holding;
 
@@ -41,6 +42,7 @@ public interface HoldingRepository extends JpaRepository<Holding, Long> {
      * @param ticker Stock ticker symbol to filter by
      * @return Number of holdings deleted
      */
+    @Transactional
     int deleteByDiscordUserIdAndTicker(String userId, String ticker);
 
 }

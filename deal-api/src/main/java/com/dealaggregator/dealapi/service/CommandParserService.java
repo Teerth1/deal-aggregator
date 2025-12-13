@@ -2,28 +2,58 @@ package com.dealaggregator.dealapi.service;
 
 import org.springframework.stereotype.Service;
 
+/**
+ * Service class for parsing user input commands into structured option data.
+ *
+ * Handles natural language option notation like "NVDA 150c 30d" and converts
+ * it into structured data for portfolio management and pricing calculations.
+ */
 @Service
 public class CommandParserService {
 
+    /**
+     * Data class representing a parsed option contract.
+     *
+     * Contains all necessary information to identify and price an option:
+     * ticker symbol, strike price, option type, and days to expiration.
+     */
     public static class ParsedOption {
+        /** Stock ticker symbol (e.g., "NVDA", "AAPL") */
         public String ticker;
+        /** Strike price of the option */
         public double strike;
-        public String type; // "call" or "put"
+        /** Option type: "call" or "put" */
+        public String type;
+        /** Number of days until expiration */
         public int days;
     }
 
     /**
-     * Parses a string like "NVDA 150c 30d" or "AAPL 200p 45"
+     * Parses a user-friendly option notation string into structured data.
+     *
+     * Supported formats:
+     * - "NVDA 150c 30d" - NVDA call option, $150 strike, 30 days to expiration
+     * - "AAPL 200p 45" - AAPL put option, $200 strike, 45 days to expiration
+     * - "TSLA 300 20d" - TSLA call option (default), $300 strike, 20 days
+     *
+     * @param query User input string in format: TICKER STRIKE[c/p] DAYS[d]
+     * @return ParsedOption containing structured option data
+     * @throws IllegalArgumentException if the format is invalid
      */
     public ParsedOption parse(String query) {
         ParsedOption result = new ParsedOption();
         String[] parts = query.toUpperCase().split(" ");
-        
+
+        // Validate minimum required parts
         if (parts.length < 3) {
             throw new IllegalArgumentException("Invalid command format. Expected: <TICKER> <STRIKE><c/p> <DAYS>d");
         }
+
+        // Extract ticker symbol (first part)
         result.ticker = parts[0];
-        // 2. Strike & Type (e.g., "150C" or "150")
+
+        // Parse strike price and option type (second part)
+        // Format: "150C" (call), "200P" (put), or "300" (defaults to call)
         String strikePart = parts[1];
         if (strikePart.endsWith("C")) {
             result.type = "call";
@@ -32,12 +62,16 @@ public class CommandParserService {
             result.type = "put";
             result.strike = Double.parseDouble(strikePart.substring(0, strikePart.length() - 1));
         } else {
-            result.type = "call"; // Default to call if not specified
+            // No type specified - default to call option
+            result.type = "call";
             result.strike = Double.parseDouble(strikePart);
         }
-        // 3. Days (e.g., "30d" or "30")
+
+        // Parse days to expiration (third part)
+        // Format: "30d" or "30" (both accepted)
         String daysPart = parts[2].replace("D", "");
         result.days = Integer.parseInt(daysPart);
+
         return result;
     }
 
