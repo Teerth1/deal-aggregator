@@ -122,9 +122,14 @@ public class DiscordBotService extends ListenerAdapter {
             Commands.slash("sell", "Close a specific position by ID")
                 .addOption(OptionType.INTEGER, "id", "Position ID from /portfolio", true),
 
-                // 7. Analyze (Smart Logic)
+            // 7. Sell All Positions
             Commands.slash("sellall", "Close all positions for a ticker")
-                .addOption(OptionType.STRING, "ticker", "Ticker symbol", true)
+                .addOption(OptionType.STRING, "ticker", "Ticker symbol", true),
+
+            // 8. Analyze (Smart Logic)
+            Commands.slash("analyze", "Get live analysis for an option contract")
+                .addOption(OptionType.STRING, "query", "Format: Ticker Strike+Type Days (e.g. NVDA 150c 30d)", true)
+                .addOption(OptionType.NUMBER, "volatility", "Optional: Custom volatility (default 0.4)", false)
         ).queue();
 
     }
