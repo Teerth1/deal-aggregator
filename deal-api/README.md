@@ -1,207 +1,108 @@
 # Options Trading Discord Bot
 
 [![CI/CD Pipeline](https://github.com/Teerth1/deal-aggregator/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/Teerth1/deal-aggregator/actions/workflows/ci-cd.yml)
+![Java](https://img.shields.io/badge/Java-17-orange)
+![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.2.4-brightgreen)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15-blue)
 
-A powerful Discord bot built with Spring Boot that provides real-time options trading analysis, Black-Scholes pricing, portfolio management, and market data visualization - all accessible through simple slash commands.
+A production-ready Discord bot for options traders. Track positions, calculate fair values with Black-Scholes, analyze portfolios with live P&L, and share strategies with your trading community.
 
-## Features
+Built with Spring Boot for reliability, PostgreSQL for persistence, and JDA for Discord integration.
 
-- **Portfolio Analytics with Live P&L** - `/analyze` command shows unrealized profit/loss for all positions with 🟢/🔴 indicators
-- **Options Portfolio Tracker** - Buy, sell, and monitor your option positions directly in Discord
-- **Dollar Cost Averaging (DCA)** - Automatically groups and averages multiple contracts of the same option
-- **Black-Scholes Calculator** - Get theoretical option prices using industry-standard pricing models
-- **Live Market Analysis** - Real-time stock prices with automated fair value calculations
-- **Interactive Stock Charts** - Beautiful Finviz chart embeds for technical analysis
-- **Smart Contract Parser** - User-friendly syntax like "NVDA 150c 30d" for quick trades
-- **Deal Aggregation** - Bonus feature: scrapes r/buildapcsales for PC component deals
-- **PostgreSQL Backend** - Persistent storage for all your positions and deal history
+---
 
-## Discord Commands
-
-### Options Trading
-- `/buy <contract> <price>` - Add option to portfolio (e.g., `/buy NVDA 150c 30d 2.50`)
-- `/sell <id>` - Close a specific position by ID
-- `/sellall <ticker>` - Close all positions for a ticker
-- `/portfolio` - View all active positions with DCA averaging
-
-### Market Analysis & Portfolio Analytics
-- `/analyze` - **NEW!** Analyze your entire portfolio with live P&L calculations
-- `/analyze <contract>` - Analyze a specific contract (e.g., `/analyze NVDA 150c 30d`)
-- `/stock <ticker>` - View interactive stock chart with live data
-- `/optionprice` - Calculate Black-Scholes fair value manually
-- `/view <username>` - View another user's portfolio
-
-### Deal Hunting
-- `/price <product>` - Search aggregated deals from Reddit
-
-## Tech Stack
-
-- **Backend**: Spring Boot 3.2.4
-- **Database**: PostgreSQL 15
-- **Discord**: JDA 5.0.0-beta.24
-- **Web Scraping**: JSoup 1.17.2
-- **Build Tool**: Maven
-- **Java Version**: 17
-
-## Getting Started
+## 🚀 Quick Start
 
 ### Prerequisites
-
-- Java 17 or higher
+- Java 17+
 - PostgreSQL 15
+- Discord Bot Token ([Get one here](https://discord.com/developers/applications))
 - Maven 3.6+
-- Discord Bot Token
 
-### Environment Variables
+### Setup
 
-Create a `.env` file or set the following environment variables:
-
-```bash
-DB_PASSWORD=your_postgres_password
-DISCORD_BOT_TOKEN=your_bot_token
-DISCORD_BOT_CHANNEL=your_channel_id
-DISCORD_BOT_GUILD=your_guild_id
-```
-
-### Local Development
-
-1. Clone the repository:
+1. **Clone the repository**
 ```bash
 git clone https://github.com/Teerth1/deal-aggregator.git
-cd deal-aggregator/deal-api
+cd deal-aggregator
 ```
 
-2. Start PostgreSQL:
+2. **Configure environment variables**
+
+Create a `.env` file in the project root:
 ```bash
-docker run --name deal-postgres -e POSTGRES_PASSWORD=password -e POSTGRES_DB=dealdb -p 5432:5432 -d postgres:15
+# Discord Configuration
+DISCORD_BOT_TOKEN=your_bot_token_here
+DISCORD_BOT_CHANNEL=your_channel_id
+DISCORD_BOT_GUILD=your_server_id
+
+# PostgreSQL Configuration
+PGHOST=localhost
+PGPORT=5432
+PGDATABASE=dealdb
+PGUSER=postgres
+PGPASSWORD=your_password
+
+# Massive.com API (Optional - for real market data)
+MASSIVE_API_KEY=your_api_key_here
 ```
 
-3. Run the application:
+3. **Start PostgreSQL**
+```bash
+docker run --name options-postgres \
+  -e POSTGRES_PASSWORD=password \
+  -e POSTGRES_DB=dealdb \
+  -p 5432:5432 \
+  -d postgres:15
+```
+
+4. **Run the bot**
 ```bash
 mvn spring-boot:run
 ```
 
-The application will start on `http://localhost:8080`
+The bot will automatically:
+- Connect to Discord
+- Register slash commands to your guild
+- Create database tables via JPA
+- Start listening for commands
 
-## CI/CD Pipeline
+---
 
-This project uses GitHub Actions for continuous integration and deployment:
+## 💬 Discord Commands
 
-### Pipeline Stages
+### Portfolio Management
+| Command | Description | Example |
+|---------|-------------|---------|
+| `/buy <contract> <price>` | Add option position to your portfolio | `/buy NVDA 150c 30d 2.50` |
+| `/portfolio` | View all your positions with DCA averaging | `/portfolio` |
+| `/sell <id>` | Close a specific position by ID | `/sell 42` |
+| `/sellall <ticker>` | Close all positions for a ticker | `/sellall NVDA` |
 
-1. **Build and Test**
-   - Compiles the code with Maven
-   - Runs unit and integration tests
-   - Generates test coverage reports
-   - Uploads test results as artifacts
+### Analysis & Pricing
+| Command | Description | Example |
+|---------|-------------|---------|
+| `/analyze` | Analyze entire portfolio with live P&L | `/analyze` |
+| `/analyze <contract>` | Analyze a specific option contract | `/analyze AAPL 200c 45d` |
+| `/optionprice` | Manual Black-Scholes calculator | `/optionprice` (opens form) |
+| `/stock <ticker>` | View stock chart with live data | `/stock TSLA` |
 
-2. **Code Quality Analysis**
-   - Runs static code analysis
-   - Verifies code style and best practices
+### Social Features
+| Command | Description | Example |
+|---------|-------------|---------|
+| `/view <username>` | View another user's portfolio | `/view TradingPro` |
 
-3. **Security Scan**
-   - Scans dependencies for known vulnerabilities
-   - Generates security reports
+---
 
-4. **Docker Build** (on push to master)
-   - Builds Docker image
-   - Tags with commit SHA and latest
-   - Pushes to Docker Hub (optional)
+## 📊 Key Features
 
-### Viewing Pipeline Results
-
-- Go to the [Actions tab](https://github.com/Teerth1/deal-aggregator/actions) on GitHub
-- Click on any workflow run to see detailed logs
-- Download test reports and artifacts from completed runs
-
-### Setting Up CI/CD
-
-The pipeline runs automatically on:
-- Push to `master` branch
-- Pull requests to `master` branch
-
-No additional setup required - just push your code!
-
-## Database Schema
-
-### Holdings Table
-```sql
-CREATE TABLE holdings (
-    id SERIAL PRIMARY KEY,
-    discord_user_id VARCHAR(255),
-    ticker VARCHAR(10),
-    type VARCHAR(10),
-    strike_price DECIMAL,
-    expiration DATE,
-    buy_price DECIMAL
-);
-```
-
-### Deals Table
-```sql
-CREATE TABLE deals (
-    id SERIAL PRIMARY KEY,
-    title VARCHAR(500),
-    price VARCHAR(100),
-    vendor VARCHAR(255),
-    deal_url TEXT,
-    category VARCHAR(100),
-    created_at TIMESTAMP,
-    updated_at TIMESTAMP
-);
-```
-
-## Project Structure
+### 1. **Portfolio Analytics with Live P&L**
+The `/analyze` command provides real-time profit/loss tracking:
 
 ```
-deal-api/
-├── src/
-│   ├── main/
-│   │   ├── java/com/dealaggregator/dealapi/
-│   │   │   ├── entity/          # JPA entities (Deal, Holding, User)
-│   │   │   ├── repository/      # Spring Data JPA repositories
-│   │   │   ├── service/         # Business logic services
-│   │   │   └── config/          # Configuration classes
-│   │   └── resources/
-│   │       └── application.properties
-│   └── test/
-├── .github/
-│   └── workflows/
-│       └── ci-cd.yml           # CI/CD pipeline configuration
-├── pom.xml
-└── README.md
-```
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-The CI/CD pipeline will automatically run tests on your PR!
-
-## License
-
-This project is licensed under the MIT License.
-
-## Screenshots
-
-### Portfolio View (`/portfolio`)
-```
-💼 YourUsername's Portfolio
-━━━━━━━━━━━━━━━━━━━━━━━━━━━
-NVDA $150 CALL (3 contracts) @ avg $2.45
-AAPL $200 PUT (2 contracts) @ avg $4.10
-
-Use /sell <id> to close | /sellall <ticker> to close all
-```
-
-### Portfolio Analysis (`/analyze`)
-```
-📊 Portfolio Analysis for YourUsername
+📊 Portfolio Analysis for TradingPro
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
 NVDA $150 CALL (3 contracts)
 Stock: $142.30 | Fair Value: $3.20
 Avg Cost: $2.45 | P&L: +$225 (+30.6%) 🟢
@@ -213,20 +114,270 @@ Avg Cost: $4.10 | P&L: -$60 (-7.3%) 🔴
 Analysis uses Black-Scholes with IV=40%
 ```
 
-## Use Cases
+**How it works:**
+- Groups contracts by ticker/strike/type
+- Calculates dollar-cost average (DCA) for multiple entries
+- Fetches live stock prices via MarketDataService
+- Computes Black-Scholes theoretical fair value
+- Shows unrealized P&L with color-coded indicators
 
-- **Day Traders** - Quickly calculate fair values and track positions
-- **Options Learners** - Experiment with Black-Scholes without paid software
-- **Trading Communities** - Share analysis and positions with your Discord server
-- **Portfolio Journaling** - Keep a record of all your option trades
+### 2. **Smart Contract Notation**
+User-friendly syntax for quick trading:
+- `NVDA 150c 30d` = NVIDIA $150 Call expiring in 30 days
+- `AAPL 200p 45` = Apple $200 Put expiring in 45 days
+- `TSLA 300 20d` = Tesla $300 Call (default) expiring in 20 days
 
-## Acknowledgments
+Parsed by `CommandParserService` into structured data for calculations.
 
-- **JDA (Java Discord API)** - Discord bot framework
-- **Black-Scholes Model** - Fischer Black & Myron Scholes for option pricing theory
-- **r/buildapcsales** - Reddit community for PC component deals
-- **Finviz** - Free stock charts and technical analysis
+### 3. **Black-Scholes Option Pricing**
+Industry-standard pricing model implementation:
+- Real-time stock price integration
+- Configurable volatility (default: 40%)
+- Calculates theoretical fair value
+- Compares to your entry price for P&L
+
+### 4. **Dollar Cost Averaging (DCA)**
+Automatically groups and averages multiple contracts:
+```
+NVDA $150 CALL (3 contracts) @ avg $2.45
+```
+Perfect for tracking positions built over time.
 
 ---
 
-**Built with [Claude Code](https://claude.com/claude-code)**
+## 🏗️ Architecture
+
+### Tech Stack
+- **Backend:** Spring Boot 3.2.4 (Java 17)
+- **Database:** PostgreSQL 15 with JPA/Hibernate
+- **Discord API:** JDA 5.0.0-beta.24
+- **Caching:** Caffeine (15-minute TTL)
+- **Build Tool:** Maven
+- **CI/CD:** GitHub Actions
+
+### Project Structure
+```
+src/
+├── main/
+│   ├── java/com/dealaggregator/dealapi/
+│   │   ├── controller/
+│   │   │   └── DealController.java          # REST API for deals
+│   │   ├── entity/
+│   │   │   ├── Deal.java                    # Reddit deal entity
+│   │   │   └── Holding.java                 # Option position entity
+│   │   ├── repository/
+│   │   │   ├── DealRepository.java          # Spring Data JPA
+│   │   │   └── HoldingRepository.java       # Spring Data JPA
+│   │   ├── service/
+│   │   │   ├── DiscordBotService.java       # Main bot logic
+│   │   │   ├── BlackScholesService.java     # Option pricing
+│   │   │   ├── CommandParserService.java    # Parse "NVDA 150c 30d"
+│   │   │   ├── HoldingService.java          # Portfolio CRUD
+│   │   │   ├── MarketDataService.java       # Live stock prices
+│   │   │   └── DealScraperService.java      # Reddit scraper
+│   │   └── DealApiApplication.java          # Spring Boot entry
+│   └── resources/
+│       └── application.properties           # Configuration
+└── test/                                     # Unit tests
+```
+
+### Database Schema
+
+**Holdings Table:**
+```sql
+CREATE TABLE holdings (
+    id SERIAL PRIMARY KEY,
+    discord_user_id VARCHAR(255),
+    ticker VARCHAR(10),
+    type VARCHAR(10),                -- "CALL" or "PUT"
+    strike_price DECIMAL,
+    expiration DATE,
+    buy_price DECIMAL
+);
+```
+
+**Deals Table:** (Legacy feature)
+```sql
+CREATE TABLE deals (
+    id SERIAL PRIMARY KEY,
+    title TEXT,
+    price DECIMAL,
+    vendor VARCHAR(255),
+    deal_url TEXT,
+    category VARCHAR(100),
+    created_at TIMESTAMP,
+    updated_at TIMESTAMP
+);
+```
+
+---
+
+## 🔧 Development
+
+### Running Locally
+
+```bash
+# Clean build
+mvn clean install
+
+# Run with live reload
+mvn spring-boot:run
+
+# Run tests
+mvn test
+
+# Package JAR
+mvn package
+```
+
+### Adding New Commands
+
+1. **Register the command** in `DiscordBotService.java`:
+```java
+Commands.slash("mycommand", "Description here")
+    .addOption(OptionType.STRING, "param", "Param description", true)
+```
+
+2. **Add the handler** in `onSlashCommandInteraction()`:
+```java
+else if (event.getName().equals("mycommand")) {
+    String param = event.getOption("param").getAsString();
+    // Your logic here
+    event.reply("Response").queue();
+}
+```
+
+3. **Restart the bot** - Commands auto-register on startup
+
+### Environment Configuration
+
+**application.properties:**
+```properties
+# Discord
+discord.bot.token=${DISCORD_BOT_TOKEN}
+discord.bot.channel=${DISCORD_BOT_CHANNEL}
+discord.bot.guild=${DISCORD_BOT_GUILD}
+
+# PostgreSQL
+spring.datasource.url=jdbc:postgresql://${PGHOST}:${PGPORT}/${PGDATABASE}
+spring.datasource.username=${PGUSER}
+spring.datasource.password=${PGPASSWORD}
+
+# JPA
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.show-sql=true
+
+# Caching (Caffeine)
+spring.cache.type=caffeine
+spring.cache.caffeine.spec=expireAfterWrite=15m,maximumSize=500
+
+# Massive.com API (Optional)
+massive.api.key=${MASSIVE_API_KEY}
+massive.api.url=https://api.massive.com/v3
+```
+
+---
+
+## 🚢 Deployment
+
+### Docker Deployment
+
+```dockerfile
+FROM openjdk:17-slim
+WORKDIR /app
+COPY target/deal-api-0.0.1-SNAPSHOT.jar app.jar
+EXPOSE 8080
+ENTRYPOINT ["java", "-jar", "app.jar"]
+```
+
+```bash
+# Build
+docker build -t options-bot .
+
+# Run
+docker run -d \
+  --name options-bot \
+  -e DISCORD_BOT_TOKEN=your_token \
+  -e PGHOST=postgres \
+  -p 8080:8080 \
+  options-bot
+```
+
+### CI/CD Pipeline
+
+GitHub Actions automatically:
+1. **Build & Test** - Compiles code and runs unit tests
+2. **Code Quality** - Static analysis and linting
+3. **Security Scan** - Checks dependencies for vulnerabilities
+4. **Docker Build** - Creates container image (on push to master)
+
+See [.github/workflows/ci-cd.yml](.github/workflows/ci-cd.yml)
+
+---
+
+## 📈 Roadmap
+
+### In Progress
+- [ ] **Massive.com Integration** - Real market data (bid/ask, IV, Greeks)
+- [ ] **Liquidity Metrics** - Open interest, volume, spread analysis
+
+### Planned Features
+- [ ] **Options Chain Viewer** - `/chain NVDA 2025-04-17`
+- [ ] **Greeks Calculator** - Delta, Gamma, Theta, Vega
+- [ ] **IV Rank/Percentile** - Historical volatility analysis
+- [ ] **Trade Alerts** - Price targets and expiration reminders
+- [ ] **Portfolio Export** - CSV/JSON export functionality
+- [ ] **Paper Trading Mode** - Simulated positions for learning
+
+### Community Requested
+- [ ] Multi-server support (currently single-guild)
+- [ ] Webhook notifications for price alerts
+- [ ] Integration with broker APIs (TDAmeritrade, Robinhood)
+- [ ] Backtesting historical trades
+
+---
+
+## 🤝 Contributing
+
+Contributions are welcome! Here's how to get started:
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+### Code Style
+- Follow Spring Boot best practices
+- Use Lombok annotations (`@Data`, `@Service`, etc.)
+- Add JavaDoc for public methods
+- Write unit tests for new features
+
+The CI/CD pipeline will automatically run tests on your PR.
+
+---
+
+## 📝 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+---
+
+## 🙏 Acknowledgments
+
+- **JDA (Java Discord API)** - Discord bot framework
+- **Black-Scholes Model** - Fischer Black & Myron Scholes for option pricing theory
+- **Finviz** - Free stock charts and technical analysis
+- **Yahoo Finance** - Market data API
+
+---
+
+## 📬 Support
+
+- **Issues:** [GitHub Issues](https://github.com/Teerth1/deal-aggregator/issues)
+- **Discussions:** [GitHub Discussions](https://github.com/Teerth1/deal-aggregator/discussions)
+- **CI/CD Status:** [GitHub Actions](https://github.com/Teerth1/deal-aggregator/actions)
+
+---
+
+**Built with ❤️ using [Claude Code](https://claude.com/claude-code)**
